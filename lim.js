@@ -3,7 +3,6 @@ const fs = require('fs');
 const axios = require('axios');
 const nacl = require('tweetnacl');
 const base58 = require('base-58');
-const { HttpsProxyAgent } = require('https-proxy-agent');
 
 const colors = {
     reset: "\x1b[0m",
@@ -29,7 +28,7 @@ const logger = {
     summary: (msg) => console.log(`${colors.green}${colors.bold}[SUMMARY] ${msg}${colors.reset}`),
     banner: () => {
         const border = `${colors.blue}${colors.bold}╔═════════════════════════════════════════╗${colors.reset}`;
-        const title = `${colors.blue}${colors.bold}║   🍉 19Seniman From Insider   🍉   ║${colors.reset}`;
+        const title = `${colors.blue}${colors.bold}║   🍉 19Seniman From Insider    🍉   ║${colors.reset}`;
         const bottomBorder = `${colors.blue}${colors.bold}╚═════════════════════════════════════════╝${colors.reset}`;
 
         console.log(`\n${border}`);
@@ -83,30 +82,31 @@ async function main() {
     }
     logger.info(`Loaded ${privateKeys.length} wallet(s) from .env file.`);
 
-    const proxies = fs.readFileSync('proxies.txt', 'utf-8').split('\n').filter(p => p.trim() !== '');
-    if (proxies.length > 0) {
-        logger.info(`Loaded ${proxies.length} proxies. Running in proxy mode.`);
-    } else {
-        logger.warn("No proxies found in proxies.txt. Running in direct mode.");
-    }
+    // --- Proxy functionality has been removed ---
+    logger.warn("Running in direct mode (no proxies will be used).");
+    const axiosInstance = axios.create();
 
     for (let i = 0; i < privateKeys.length; i++) {
         const privateKey = privateKeys[i];
         logger.step(`Processing Wallet #${i + 1}/${privateKeys.length}`);
-        
-        try {
-            let axiosInstance;
-            if (proxies.length > 0) {
-                const proxy = proxies[i % proxies.length];
-                const proxyAgent = new HttpsProxyAgent(`http://${proxy}`);
-                axiosInstance = axios.create({ httpsAgent: proxyAgent });
-            } else {
-                axiosInstance = axios.create();
-            }
 
+        if (!privateKey) {
+            logger.error(`Invalid private key found at position #${i + 1}. Skipping this wallet.`);
+            console.log('---------------------------------------------');
+            continue;
+        }
+
+        try {
             const secretKeyBytes = base58.decode(privateKey);
             const keyPair = nacl.sign.keyPair.fromSecretKey(secretKeyBytes);
             const walletAddress = base58.encode(keyPair.publicKey);
+
+            if (!walletAddress) {
+                logger.error("Failed to generate a valid wallet address. Skipping this wallet.");
+                console.log('---------------------------------------------');
+                continue;
+            }
+
             logger.info(`Wallet Address: ${walletAddress}`);
 
             const commonHeaders = {
