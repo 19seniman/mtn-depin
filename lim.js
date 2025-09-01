@@ -3,7 +3,7 @@ const fs = require('fs');
 const axios = require('axios');
 const nacl = require('tweetnacl');
 const base58 = require('base-58');
-const HttpsProxyAgent = require('https-proxy-agent');
+const { HttpsProxyAgent } = require('https-proxy-agent');
 
 const colors = {
     reset: "\x1b[0m",
@@ -99,7 +99,7 @@ async function main() {
             console.log('---------------------------------------------');
             continue;
         }
-        
+
         try {
             let axiosInstance;
             if (proxies.length > 0) {
@@ -113,13 +113,13 @@ async function main() {
             const secretKeyBytes = base58.decode(privateKey);
             const keyPair = nacl.sign.keyPair.fromSecretKey(secretKeyBytes);
             const walletAddress = base58.encode(keyPair.publicKey);
-            
+
             if (!walletAddress) {
                 logger.error("Failed to generate a valid wallet address. Skipping this wallet.");
                 console.log('---------------------------------------------');
                 continue;
             }
-            
+
             logger.info(`Wallet Address: ${walletAddress}`);
 
             const commonHeaders = {
@@ -192,21 +192,3 @@ async function main() {
                 }
 
                 logger.success(`Cycle #${cycleCount} completed.`);
-                cycleCount++;
-
-                await startCountdown(20);
-            }
-
-        } catch (error) {
-            logger.error(`An error occurred while processing Wallet #${i + 1}: ${error.message}`);
-            logger.warn('Moving to the next wallet in 5 seconds...');
-            await delay(5000);
-        }
-        console.log('---------------------------------------------');
-    }
-    logger.summary("All wallet processing loops have concluded.");
-}
-
-main().catch(err => {
-    logger.critical(`A critical error occurred: ${err.message}`);
-});
