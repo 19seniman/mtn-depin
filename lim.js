@@ -3,7 +3,7 @@ const fs = require('fs');
 const axios = require('axios');
 const nacl = require('tweetnacl');
 const base58 = require('base-58');
-const { HttpsProxyAgent } = require('https-proxy-agent');
+const HttpsProxyAgent = require('https-proxy-agent');
 
 const colors = {
     reset: "\x1b[0m",
@@ -93,6 +93,12 @@ async function main() {
     for (let i = 0; i < privateKeys.length; i++) {
         const privateKey = privateKeys[i];
         logger.step(`Processing Wallet #${i + 1}/${privateKeys.length}`);
+
+        if (!privateKey) {
+            logger.error(`Invalid private key found at position #${i + 1}. Skipping this wallet.`);
+            console.log('---------------------------------------------');
+            continue;
+        }
         
         try {
             let axiosInstance;
@@ -107,6 +113,13 @@ async function main() {
             const secretKeyBytes = base58.decode(privateKey);
             const keyPair = nacl.sign.keyPair.fromSecretKey(secretKeyBytes);
             const walletAddress = base58.encode(keyPair.publicKey);
+            
+            if (!walletAddress) {
+                logger.error("Failed to generate a valid wallet address. Skipping this wallet.");
+                console.log('---------------------------------------------');
+                continue;
+            }
+            
             logger.info(`Wallet Address: ${walletAddress}`);
 
             const commonHeaders = {
