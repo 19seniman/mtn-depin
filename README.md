@@ -12,10 +12,14 @@ type airdrop= chat ai to earn ( airdrop)
 ##INSTALATION
 
 ```
-git clone 
+git clone https://github.com/19seniman/mtn-depin.git
+cd mtn-depin
 ```
 ```
 npm init -y
+npm install
+npm install dotenv
+npm install base-58
 ```
 ```
 nano .env
