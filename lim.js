@@ -192,3 +192,21 @@ async function main() {
                 }
 
                 logger.success(`Cycle #${cycleCount} completed.`);
+                cycleCount++;
+
+                await startCountdown(20);
+            }
+
+        } catch (error) {
+            logger.error(`An error occurred while processing Wallet #${i + 1}: ${error.message}`);
+            logger.warn('Moving to the next wallet in 5 seconds...');
+            await delay(5000);
+        }
+        console.log('---------------------------------------------');
+    }
+    logger.summary("All wallet processing loops have concluded.");
+}
+
+main().catch(err => {
+    logger.critical(`A critical error occurred: ${err.message}`);
+});
