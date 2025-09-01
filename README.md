@@ -29,3 +29,6 @@ nano .env
 ```
 node lim.js
 ```
+
+
+![alt text](https://github.com/19seniman/mtn-depin/blob/main/picture/Screenshot%202025-09-01%20201617.png?raw=true)
