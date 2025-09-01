@@ -14,35 +14,24 @@ const colors = {
     white: "\x1b[37m",
     bold: "\x1b[1m",
     blue: "\x1b[33m",
-    magenta: "\x1b[35m",
-    gray: "\x1b[90m"
+    magenta: "\x1b[35m"
 };
 
 const logger = {
-    info: (msg) => console.log(`${colors.cyan}[i] ${msg}${colors.reset}`),
-    warn: (msg) => console.log(`${colors.yellow}[!] ${msg}${colors.reset}`),
-    error: (msg) => console.log(`${colors.red}[x] ${msg}${colors.reset}`),
-    success: (msg) => console.log(`${colors.green}[+] ${msg}${colors.reset}`),
-    loading: (msg) => console.log(`${colors.magenta}[*] ${msg}${colors.reset}`),
-    step: (msg) => console.log(`${colors.blue}[>] ${colors.bold}${msg}${colors.reset}`),
-    critical: (msg) => console.log(`${colors.red}${colors.bold}[FATAL] ${msg}${colors.reset}`),
-    summary: (msg) => console.log(`${colors.green}${colors.bold}[SUMMARY] ${msg}${colors.reset}`),
-    banner: () => {
-        const border = `${colors.blue}${colors.bold}╔═════════════════════════════════════════╗${colors.reset}`;
-        const title = `${colors.blue}${colors.bold}║   🍉 19Seniman From Insider    🍉   ║${colors.reset}`;
-        const bottomBorder = `${colors.blue}${colors.bold}╚═════════════════════════════════════════╝${colors.reset}`;
-
-        console.log(`\n${border}`);
-        console.log(`${title}`);
-        console.log(`${bottomBorder}\n`);
-    },
-    section: (msg) => {
-        const line = '─'.repeat(40);
-        console.log(`\n${colors.gray}${line}${colors.reset}`);
-        if (msg) console.log(`${colors.white}${colors.bold} ${msg} ${colors.reset}`);
-        console.log(`${colors.gray}${line}${colors.reset}\n`);
-    },
+    info: (msg) => console.log(`${colors.green}[✓] ${msg}${colors.reset}`),
+    warn: (msg) => console.log(`${colors.yellow}[⚠] ${msg}${colors.reset}`),
+    error: (msg) => console.log(`${colors.red}[✗] ${msg}${colors.reset}`),
+    success: (msg) => console.log(`${colors.green}[✅] ${msg}${colors.reset}`),
+    loading: (msg) => console.log(`${colors.cyan}[⟳] ${msg}${colors.reset}`),
+    step: (msg) => console.log(`${colors.white}[➤] ${msg}${colors.reset}`),
     countdown: (msg) => process.stdout.write(`\r${colors.blue}[⏰] ${msg}${colors.reset}`),
+    banner: () => {
+        console.log(`${colors.cyan}${colors.bold}`);
+        console.log(`---------------------------------------------`);
+        console.log(`    Mention Auto Bot - Airdrop Insiders      `);
+        console.log(`---------------------------------------------${colors.reset}`);
+        console.log();
+    }
 };
 
 const userAgents = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"];
@@ -78,7 +67,7 @@ async function main() {
 
     const privateKeys = loadPrivateKeys();
     if (privateKeys.length === 0) {
-        logger.critical("No private keys found in your .env file. Make sure they are in the format PRIVATE_KEY_1=... etc.");
+        logger.error("No private keys found in your .env file. Make sure they are in the format PRIVATE_KEY_1=... etc.");
         return;
     }
     logger.info(`Loaded ${privateKeys.length} wallet(s) from .env file.`);
@@ -94,12 +83,6 @@ async function main() {
         const privateKey = privateKeys[i];
         logger.step(`Processing Wallet #${i + 1}/${privateKeys.length}`);
 
-        if (!privateKey) {
-            logger.error(`Invalid private key found at position #${i + 1}. Skipping this wallet.`);
-            console.log('---------------------------------------------');
-            continue;
-        }
-
         try {
             let axiosInstance;
             if (proxies.length > 0) {
@@ -113,13 +96,6 @@ async function main() {
             const secretKeyBytes = base58.decode(privateKey);
             const keyPair = nacl.sign.keyPair.fromSecretKey(secretKeyBytes);
             const walletAddress = base58.encode(keyPair.publicKey);
-
-            if (!walletAddress) {
-                logger.error("Failed to generate a valid wallet address. Skipping this wallet.");
-                console.log('---------------------------------------------');
-                continue;
-            }
-
             logger.info(`Wallet Address: ${walletAddress}`);
 
             const commonHeaders = {
@@ -204,9 +180,9 @@ async function main() {
         }
         console.log('---------------------------------------------');
     }
-    logger.summary("All wallet processing loops have concluded.");
+    logger.warn("All wallet processing loops have concluded.");
 }
 
 main().catch(err => {
-    logger.critical(`A critical error occurred: ${err.message}`);
+    logger.error(`A critical error occurred: ${err.message}`);
 });
