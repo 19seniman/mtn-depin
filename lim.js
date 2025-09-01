@@ -3,7 +3,6 @@ const fs = require('fs');
 const axios = require('axios');
 const nacl = require('tweetnacl');
 const base58 = require('base-58');
-const { HttpsProxyAgent } = require('https-proxy-agent');
 
 const colors = {
     reset: "\x1b[0m",
