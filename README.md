@@ -9,8 +9,8 @@ type airdrop= chat ai to earn ( airdrop)
 🔘 Complete Task ( chat ai ,chat gpt ,gemini, perplexity ,grook. & deepseek)
 ✅ Done
 
-##INSTALATION
 
+#INSTALATION
 ```
 git clone https://github.com/19seniman/mtn-depin.git
 cd mtn-depin
