@@ -10,7 +10,8 @@ type airdrop= chat ai to earn ( airdrop)
 ✅ Done
 
 
-#INSTALATION
+###INSTALATION
+
 ```
 git clone https://github.com/19seniman/mtn-depin.git
 cd mtn-depin
