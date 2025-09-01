@@ -18,9 +18,10 @@ cd mtn-depin
 ```
 ```
 npm init -y
-npm install
+npm install axios
 npm install dotenv
 npm install base-58
+npm install tweetnacl
 ```
 ```
 nano .env
